@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Devlin_Cortens_CW1_Mobile_Dev</string>
+
+    <!--For the ActionBarDrawerToggle-->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="list_text_colours_string">Items in green represent works which will be on for only one day. Yellow indicates they will last for 5 days. Red indicates any time longer than 5 days.</string>
+    <string name="home_description">Swipe right from the left of the screen or click on the hamburger icon in the top left to open the menu and get started.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

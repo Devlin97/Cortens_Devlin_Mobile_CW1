@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/itemTitleText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="TEST"
+        android:textSize="50px"
+        android:textStyle="bold"
+        android:layout_marginBottom="15px"
+        />
+
+    <TextView
+        android:id="@+id/startDateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="test123"
+        android:layout_marginBottom="15px"
+        />
+
+    <TextView
+        android:id="@+id/endDateText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="test123"
+        />
+
+</LinearLayout>

@@ -1,0 +1,159 @@
+/*DEVLIN CORTENS
+S1825992 */
+
+package org.me.gcu.devlin_cortens_cw1_mobile_dev;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+
+public class MapDetailsIncidentsFragment extends Fragment implements AdapterView.OnItemClickListener {
+
+    private EditText searchEdit;
+    private ListView parsedListView;
+    private TextView titleText, descriptionText, linkText, pubDateText;
+    private ArrayList<Item> itemsList;
+    private ArrayAdapter arrayAdapter;
+    private GoogleMap mMap;
+
+    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+
+        /**
+         * Manipulates the map once available.
+         * This callback is triggered when the map is ready to be used.
+         * This is where we can add markers or lines, add listeners or move the camera.
+         * In this case, we just add a marker near Sydney, Australia.
+         * If Google Play services is not installed on the device, the user will be prompted to
+         * install it inside the SupportMapFragment. This method will only be triggered once the
+         * user has installed Google Play services and returned to the app.
+         */
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            mMap = googleMap;
+            LatLng scotland = new LatLng(56.4907, 4.2026);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(scotland));
+        }
+    };
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_map_details_incidents, container, false);
+
+        if(itemsList != null && !itemsList.isEmpty()) {
+            itemsList.clear();
+        }
+
+        Bundle bundle = getArguments();
+        itemsList = (ArrayList<Item>) bundle.getSerializable("ITEMLIST");
+
+        //System.out.println(itemsList);
+
+
+        arrayAdapter = new ArrayAdapter(getActivity().getApplicationContext(), android.R.layout.simple_list_item_1, itemsList);
+        //System.out.println(arrayAdapter);
+
+
+
+        searchEdit = (EditText) v.findViewById(R.id.searchEdit);
+        parsedListView = (ListView) v.findViewById(R.id.parsedListView);
+        titleText = (TextView) v.findViewById(R.id.titleText);
+        descriptionText = (TextView) v.findViewById(R.id.descriptionText);
+        linkText = (TextView) v.findViewById(R.id.linkText);
+        pubDateText = (TextView) v.findViewById(R.id.pubDateText);
+
+        parsedListView.setAdapter(arrayAdapter);
+        parsedListView.setOnItemClickListener(this);
+        titleText.setText("Click an item on the list to see it on the map!");
+
+        searchEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                arrayAdapter.getFilter().filter(searchEdit.getText().toString().trim());
+            }
+        });
+
+        return v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(callback);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        //get the item from that index that we clicked in the listview
+        Item itemToDisplay = (Item) arrayAdapter.getItem(i);
+
+        //now we have that item, set all the textviews to the various parts of the item
+        titleText.setText(itemToDisplay.getTitle());
+        descriptionText.setText(itemToDisplay.getDescription());
+        linkText.setText(itemToDisplay.getLink());
+        pubDateText.setText("Published: " + itemToDisplay.getPubDate().toString());
+
+        //Time to parse the georss point into latitude and longitude
+        //Grab the georss point
+        String geoPoint = itemToDisplay.getGeorsspoint();
+
+        //Find the space which separates the latitude and longitude
+        //Then set the latitude to the first numbers
+        //Set the longitude to the second set of numbers
+        int breakPoint = geoPoint.indexOf(" ");
+        double latitude = Double.parseDouble(geoPoint.substring(0, breakPoint));
+        double longitude = Double.parseDouble(geoPoint.substring(breakPoint + 1, geoPoint.length()));
+        LatLng location = new LatLng(latitude, longitude);
+
+        //First we clear the map to get rid of all the markers
+        //We do this so if we press multiple items the map doesnt have multiple markers on it
+        mMap.clear();
+
+        //Add a marker where that new latitude and longitude is from parsing our georss point
+        mMap.addMarker(new MarkerOptions().position(location).title("Roadwork Location"));
+
+        //Move the camera to the marker
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+
+        //Animate the camera to the location
+        //Without this the camera is zoomed out incredibly far away
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f));
+    }
+}
