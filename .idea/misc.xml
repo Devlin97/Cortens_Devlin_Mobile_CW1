@@ -3,6 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/drawable/ic_current_incidents.xml" value="0.315" />
+        <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/drawable/ic_home.xml" value="0.315" />
+        <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/drawable/ic_launcher_background.xml" value="0.315" />
+        <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/drawable/ic_planned_roadworks.xml" value="0.315" />
+        <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/drawable/ic_roadowkrs.xml" value="0.315" />
         <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/layout-land/fragment_home.xml" value="0.31040564373897706" />
         <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/layout-land/fragment_map_details_incidents.xml" value="0.25" />
         <entry key="..\:/Users/DevlinCortens/AndroidStudioProjects/Devlin_Cortens_CW1_Mobile_Dev/app/src/main/res/layout-land/fragment_maps_details.xml" value="0.31040564373897706" />
