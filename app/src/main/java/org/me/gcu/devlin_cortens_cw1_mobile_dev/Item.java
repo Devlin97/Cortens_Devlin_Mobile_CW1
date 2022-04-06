@@ -60,7 +60,7 @@ public class Item implements Serializable {
     //this method is only needed for current incidents
     //since current incidents dont have a duration and wont need colour coded
     //we dont need to use a custom array adapter so the basic array adapter just calls the items toString method
-    //and we will just return the title. Then we the user clicks on it they can see the description and pubdate etc etc
+    //and we will just return the title. Then when the user clicks on it they can see the description and pubdate etc etc
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public String toString() {
