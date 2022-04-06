@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Devlin Cortens-->
 <!--S1825992-->
+<!--Portrait layout for home page-->
+<!--This is a simple home page which just sets out to describe what the app is
+and how to work it-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"

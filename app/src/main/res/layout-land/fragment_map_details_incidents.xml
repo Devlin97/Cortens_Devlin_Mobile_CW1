@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Devlin Cortens-->
 <!--S1825992-->
+<!--Landscape layout for current incidents feed-->
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"

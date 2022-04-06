@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Devlin Cortens-->
 <!--S1825992-->
+<!--This is the layout that will be used by the custom array adapter
+and will be used for each item in the list-->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"

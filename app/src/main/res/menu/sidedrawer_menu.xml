@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--Devlin Cortens-->
 <!--S1825992-->
+<!--This is the xml file that structures whats inside the navigation drawer -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
+    <!--This grouping tag makes sure you can only select one option at a time, this is needed because these are all different fragments that will be opening-->
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
