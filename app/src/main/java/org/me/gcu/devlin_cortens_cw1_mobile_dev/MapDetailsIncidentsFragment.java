@@ -51,6 +51,7 @@ public class MapDetailsIncidentsFragment extends Fragment implements AdapterView
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
+            mMap.getUiSettings().setZoomControlsEnabled(true);
             LatLng scotland = new LatLng(56.4907, 4.2026);
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(scotland));
         }

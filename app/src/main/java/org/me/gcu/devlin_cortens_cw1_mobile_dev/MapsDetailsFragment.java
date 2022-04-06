@@ -52,6 +52,7 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
             //when the map initiates we want to make it a global variable so we can change it later
             //then we get the lat lon of scotland so the map centers on scotland zoomed out on europe
             mMap = googleMap;
+            mMap.getUiSettings().setZoomControlsEnabled(true);
             LatLng scotland = new LatLng(56.4907, 4.2026);
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(scotland));
         }
