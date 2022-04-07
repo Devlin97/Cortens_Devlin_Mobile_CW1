@@ -27,6 +27,7 @@ public class Item implements Serializable {
 
     //This variable isnt inside the item tag but is used to hold the duration of the roadworks after its been parsed from the description
     private long hours;
+    private boolean isIncident;
 
     //Planned and Current Roadworks Constructor
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -46,6 +47,8 @@ public class Item implements Serializable {
         //Run the algorithm that finds the difference in hours between the two dates and set this to hours
         hours = findHours(theStart, theEnd);
 
+        isIncident = false;
+
     }
 
     //Current Incidents Constructor
@@ -57,6 +60,7 @@ public class Item implements Serializable {
         link = linkIn;
         georsspoint = geoIn;
         pubDate = pubDateIn;
+        isIncident = true;
 
     }
 
@@ -68,7 +72,10 @@ public class Item implements Serializable {
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public String toString() {
-        return title;
+        if(isIncident == true) {
+            return title;
+        }
+        return title + " " + description;
     }
 
     //Getters and Setters for each of the attributes
@@ -135,6 +142,14 @@ public class Item implements Serializable {
 
     public void setHours(long newHours) {
         this.hours = newHours;
+    }
+
+    public boolean getIsIncident() {
+        return isIncident;
+    }
+
+    public void setIsIncident(boolean newIsIncident) {
+        this.isIncident = newIsIncident;
     }
 
     //This method is used to parse the description of current and planned roadworks
