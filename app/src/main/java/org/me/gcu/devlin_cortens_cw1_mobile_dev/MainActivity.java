@@ -247,13 +247,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void parseDataRoadworks(String dataToParse) {
 
+        //Try catch so if anything breaks it will be caught and not completely break the app
         try {
+            //Initiate the xml pull parser
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser xpp = factory.newPullParser();
             xpp.setInput(new StringReader(dataToParse));
             int eventType = xpp.getEventType();
+
+            //For the logic of parsing the data, a boolean value is here that checks the tag we are checking is inside of an item to get all the values for that item
             boolean insideOfItem = false;
+
+            //Next temporary string are needed to be initiated
+            //These will hold the data for each value between each tag before it is then put inside of a constructor to create said item
             String tempTitle = "";
             String tempDescription = "";
             String tempLink = "";
@@ -262,61 +269,104 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String tempComments = "";
             String tempPubDate = "";
             LocalDate tempPubDateToDate = null;
+
+            //While the event type is not the end of the document start going through the xml feed
             while (eventType != XmlPullParser.END_DOCUMENT) {
 
+                //When the xml pull parser finds a start tag it will go inside this if statement
                 if (eventType == XmlPullParser.START_TAG) {
+                    //If the start tag the item found is item (<item>) set the boolean value of insideOfItem to true so this method now knows
+                    //it is inside of an item to get all related values for that said item
                     if (xpp.getName().equalsIgnoreCase("item")) {
-
                         insideOfItem = true;
-
-                    } else if (xpp.getName().equalsIgnoreCase("title")) {
+                    }
+                    //else if that start tag is title (<title>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("title")) {
+                        //if the start tag was title AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this title tag and set the tempTitle variable to it
                         if (insideOfItem) {
                             tempTitle = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("description")) {
+                    }
+                    //else if the start tag is description (<description>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("description")) {
+                        //if the start tag was description AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this description tag and set the tempDescription variable to it
                         if (insideOfItem) {
                             tempDescription = xpp.nextText();
 
-                            //The description of each item usually has 1 or <br /> tags
+                            //The description of each item usually has 1 or more <br /> tags in it
                             //This would probably be useful is this was a web app but this has no use in this application
                             //So we'll replace all break tags with a space instead
                             tempDescription = tempDescription.replace("<br />", " ");
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("link")) {
+                    }
+                    //else if the start tag is link (<link>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("link")) {
+                        //if the start tag was link AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this link tag and set the tempLink variable to it
                         if (insideOfItem) {
                             tempLink = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("point")) {
+                    }
+                    //else if the start tag is point (<point>) go inside this if
+                    //Note: the actual tag within the rss feed is <georss:point>, but the xml pull parser interprets this as <point> due to the ':' in the tag
+                    else if (xpp.getName().equalsIgnoreCase("point")) {
+                        //if the start tag was point AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this point tag and set the tempPoint variable to it
                         if (insideOfItem) {
+                            //This georsspoint is a string containing a latitude and longitude divded by a space
+                            //This will need to be parsed into numbers at some point in order to be used by google maps
+                            //There a variety of different ways this could be parsed, including right here
+                            //But for this application the georsspoint will only be parsed as it is called to show on a map
                             tempGeorsspoint = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("author")) {
+                    }
+                    //else if the start tag is author (<author>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("author")) {
+                        //if the start tag was author AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this author tag and set the tempAuthor variable to it
                         if (insideOfItem) {
+                            //Note: in the XML feed Author is never used by any item but is still included in the feed
+                            //this will still be added as to differentiate the roadworks from the current incidents item constructor
+                            //Leaving this in will also be helpful if in the future the traffic scotland roadworks feed start using this tag for more information
                             tempAuthor = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("comments")) {
+                    }
+                    //else if the start tag is comments (<comments>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("comments")) {
+                        //if the start tag was comments AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this comments tag and set the tempComments variable to it
                         if (insideOfItem) {
+                            //Note: in the XML feed Comments is never used by any item but is still included in the feed
+                            //this will still be added as to differentiate the roadworks from the current incidents item constructor
+                            //Leaving this in will also be helpful if in the future the traffic scotland roadworks feed start using this tag for more information
                             tempComments = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("pubdate")) {
+                    }
+                    //else if the start tag is pubdate (<pubdate>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("pubdate")) {
+                        //if the start tag was pubdate AND the method is also iterating over xml tags inside of an item
+                        //get the text inside this pubdate tag and set the tempPubDate variable to it
                         if (insideOfItem) {
                             tempPubDate = xpp.nextText();
 
-                            //In the xml feed each of the publication dates has a time, and its always 00:00
+                            //In the xml feed each of the publication dates have a time, and its always 00:00
                             //This is redundant and not needed so i'm going to trim it off the end of each item
                             int dateTrim = tempPubDate.indexOf("00:00");
                             tempPubDate = tempPubDate.substring(0, dateTrim - 1);
 
-                            //Since the date is stored as a string I want it converted to a date time
+                            //Since the date is stored as a string I want it converted to a LocalDate
                             //This date time formatter formats the specific type of string into a LocalDate
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH);
                             LocalDate date = LocalDate.parse(tempPubDate, formatter);
                             tempPubDateToDate = date;
                         }
                     }
-
-                } else if (eventType == XmlPullParser.END_TAG
-                        && xpp.getName().equalsIgnoreCase("item")) {
+                    //Else if the event type is an end tag (</>) AND that end tag is item (</item>) go inside this if
+                } else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
+                    //The item end tag has been reach so we are no longer inside of an item
+                    //So the boolean value checking if we are inside an item is set back to false
                     insideOfItem = false;
 
                     //No we add all these temporary item information attributes into a new item
@@ -336,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                 }
+                //Check the next tag
                 eventType = xpp.next();
 
             }
