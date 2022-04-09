@@ -75,7 +75,7 @@ public class Item implements Serializable {
         if(isIncident == true) {
             return title;
         }
-        return title + " " + description;
+        return title + description;
     }
 
     //Getters and Setters for each of the attributes
