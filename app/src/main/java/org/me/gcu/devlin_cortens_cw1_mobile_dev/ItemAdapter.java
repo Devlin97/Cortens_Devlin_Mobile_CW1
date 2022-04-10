@@ -27,7 +27,11 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
     private Context mContext;
     int mResource;
 
+    //In order to filter the arraylists the current items list will be stored as a global variable so it can be changed when it gets filtered
     private ArrayList<Item> fullList;
+
+    //Another arrayList will be created which is used to check the full list when filtering is being done,
+    //and then updating the other list with the results from this list
     private ArrayList<Item> fullListForFilter;
 
     public ItemAdapter(@NonNull Context context, int resource, ArrayList<Item> itemsList) {
@@ -35,6 +39,7 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
         mContext = context;
         mResource = resource;
 
+        //set the global arraylists to the list which will be passed in (itemList)
         fullList = new ArrayList<>(itemsList);
         fullListForFilter = new ArrayList<>(itemsList);
     }
@@ -65,8 +70,8 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
 
         //Set text of each of these textviews to be what we pulled earlier of this specific item in the beginning of this method
         titleText.setText(title);
-        startDateText.setText(startDate);
-        endDateText.setText(endDate);
+        startDateText.setText("From: " + startDate);
+        endDateText.setText("Until: " + endDate);
 
         //This is the logic to colour each of the individual items within the list
         //An internal method in item already parses the description to find out how long each roadwork will last
@@ -97,6 +102,7 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
         return convertView;
     }
 
+    //overrided getFilter function which will return the custom titleFilter to filter the lists results
     @NonNull
     @Override
     public Filter getFilter() {
@@ -104,56 +110,88 @@ public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
         return titleFilter;
     }
 
+    //since custom filtering is happening getCount() needs to be overridden in order to
+    //get the count from the internal global arrayList which has been filtered instead of the normal super.size();
     @Override
     public int getCount() {
         return fullList.size();
     }
 
+    //same reason as getCount(), this needs to be overidden to get the item for the list which is being filtered
     @Nullable
     @Override
     public Item getItem(int position) {
         return fullList.get(position);
     }
 
+    //notifies that the data set has been changed
     @Override
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
     }
 
+    //custom filtering which is being returned by the overridden getFilter() class
     private Filter titleFilter = new Filter() {
         @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         protected FilterResults performFiltering(CharSequence charSequence) {
+            //this method gets called when the adapters getFilter() class is classes
+            //this is what holds the logic of the filtering
+
+            //create a new arrayList to hold the all the items which satisfy the filter conditions
             ArrayList<Item> filterList = new ArrayList<>();
 
+            //if the charSequence (character sequence which is passed in) is null or 0 characters long this list will add the
+            //entire contents of the fullListForFilter global arrayList
+            //this means the full list is visible when nothing is getting searched
             if(charSequence == null || charSequence.length() == 0)
             {
                 filterList.addAll(fullListForFilter);
             }
+            //else will get called when the the character sequence is not null or 0
+            //which means something has been entered and is being searched
+            //so this else holds the logic for the filtering
             else
             {
+                //as everything that is to be searched in item is held as a string, not a CharSequence
+                //the CharSequence needs to be converted to a string first
+                //it will also be changed to lowercase and have the space trimmed off the ends
+                //this is basic error handling so entering a character in the wrong case doesn't ruin the search
                 String filteredString = charSequence.toString().toLowerCase().trim();
 
+                //for each item in the global list which holds every single roadwork
                 for(Item item : fullListForFilter) {
+                    //if that current items title contains the string which is currently being searched
+                    //OR if the current items start date contains the string which is being searched
+
+                    //Note: parseDescription is an internal item method which finds the start and end date in the description
+                    //parseDescription[0] returns the start date
                     if (item.getTitle().toLowerCase().contains(filteredString) || item.parseDescription(item.getDescription())[0].toLowerCase().contains(filteredString)) {
-                        System.out.println(item.getTitle());
+                        //if that item's title or start date does contain the searched string then add that to the list
+                        //which is holding all the filtered items
                         filterList.add(item);
                     }
                 }
             }
-            System.out.println(filterList.size());
+            //create a new FilterResult as this is what is passed into the publishResults method
             FilterResults filterResults = new FilterResults();
+
+            //add the list which holds all the filters to the filterResult's .values
             filterResults.values = filterList;
 
+            //return that filterResult, and it will now be used by publishResults
             return filterResults;
         }
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            //fullList is the global list which is dictates the contents of this adapter that will be displayed in the list view
+            //so now it needs set to filteredList which holds all the items that satisfy the search condition
+            //that filtered list is stored in the filterResults.values, so take that and parse it as an ArrayList of items
             fullList = (ArrayList<Item>) filterResults.values;
-            System.out.println(fullList.size());
+
+            //now notify the adapter that the dataset has been changed so it can update
             notifyDataSetChanged();
-            Log.e("Checking publishing", "In the method where data set has been notified");
         }
     };
 }
