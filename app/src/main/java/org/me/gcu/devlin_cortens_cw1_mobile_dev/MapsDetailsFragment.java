@@ -1,5 +1,7 @@
+/**
 //DEVLIN CORTENS
 //S1825992
+*/
 
 package org.me.gcu.devlin_cortens_cw1_mobile_dev;
 
@@ -52,6 +54,7 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
             //when the map initiates we want to make it a global variable so we can change it later
             //then we get the lat lon of scotland so the map centers on scotland zoomed out on europe
             mMap = googleMap;
+            //initiates the map to have the small zoom in and out buttons on it
             mMap.getUiSettings().setZoomControlsEnabled(true);
             LatLng scotland = new LatLng(56.4907, 4.2026);
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(scotland));
@@ -65,21 +68,25 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
                              @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_maps_details, container, false);
 
+        //quick check to clear the itemsList in case it is still storing data from when it was last called
         if(itemsList != null && !itemsList.isEmpty()) {
             itemsList.clear();
         }
 
+        //Grab the itemsList which has been passed to this fragment
         Bundle bundle = getArguments();
         itemsList = (ArrayList<Item>) bundle.getSerializable("ITEMLIST");
 
         //System.out.println(itemsList);
 
 
+        //Set the arrayAdapter to the custom ItemAdapter class which uses the application context, the item list custom layout, and the the itemsList
         arrayAdapter = new ItemAdapter(getActivity().getApplicationContext(), R.layout.item_list, itemsList);
         //System.out.println(arrayAdapter);
 
 
 
+        //Find all the editTexts, Textviews, and ListViews in the xml file by id to be accessed within this fragment
         searchEdit = (EditText) v.findViewById(R.id.searchEdit);
         parsedListView = (ListView) v.findViewById(R.id.parsedListView);
         titleText = (TextView) v.findViewById(R.id.titleText);
@@ -87,18 +94,36 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
         linkText = (TextView) v.findViewById(R.id.linkText);
         pubDateText = (TextView) v.findViewById(R.id.pubDateText);
 
+        //set the parsedList adapter to the array adapter, which is a custom ItemAdapter
         parsedListView.setAdapter(arrayAdapter);
+
+        //set the onItemClickListener on the list to be able to click an item and see more details about it
         parsedListView.setOnItemClickListener(this);
+
+        //When this fragment first gets called, the user needs to understand what it is they're looking at, and how to interact with this page.
+        //This sets the title text to a message which lets the user know they have the ability to click an item on the list
+        //and that items details will be shown in this white space below the list
         titleText.setText("Click an item on the list to see it on the map!");
 
+        //text changed listener on the search edit
+        //this allows a user to search the listview to find a specific roadwork by start date or road
+        //this textchangedlistener gets called anytime text is entered or removed from the editText
         searchEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
 
+            //The text watcher allows for methods to be called during three different times of text being changed.
+            //Before, During, and After.
+            //for this specific search, searching should happen as the text is being entered
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //call the getFilter() method on the customer array adapter class
+                //this has been changed within the custom adapter to search the list by the title
+                //i.e. the road that work is being done on
+                //OR by the start date of the roadworks
+                //this passes in the character sequence that is currently being entered and the filtering logic is handled by the custom adapter
                 arrayAdapter.getFilter().filter(charSequence);
             }
 
@@ -149,7 +174,7 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
         //We do this so if we press multiple items the map doesnt have multiple markers on it
         mMap.clear();
 
-        //Add a marker where that new latitude and longitude is from parsing our georss point
+        //Add a marker where that new latitude and longitude is from parsing the georss point
         mMap.addMarker(new MarkerOptions().position(location).title("Roadwork Location"));
 
         //Move the camera to the marker
