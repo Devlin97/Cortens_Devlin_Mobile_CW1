@@ -99,12 +99,12 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                arrayAdapter.getFilter().filter(charSequence);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                arrayAdapter.getFilter().filter(searchEdit.getText().toString().trim());
+                //arrayAdapter.getFilter().filter(searchEdit.getText().toString().trim());
             }
         });
 

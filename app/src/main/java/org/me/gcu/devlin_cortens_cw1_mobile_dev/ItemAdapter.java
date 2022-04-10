@@ -6,27 +6,37 @@ package org.me.gcu.devlin_cortens_cw1_mobile_dev;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Locale;
 
-public class ItemAdapter extends ArrayAdapter<Item> {
+public class ItemAdapter extends ArrayAdapter<Item> implements Filterable {
     private Context mContext;
     int mResource;
+
+    private ArrayList<Item> fullList;
+    private ArrayList<Item> fullListForFilter;
 
     public ItemAdapter(@NonNull Context context, int resource, ArrayList<Item> itemsList) {
         super(context, resource, itemsList);
         mContext = context;
         mResource = resource;
+
+        fullList = new ArrayList<>(itemsList);
+        fullListForFilter = new ArrayList<>(itemsList);
     }
 
     //We need this custom array adapter to get hold of this method
@@ -90,6 +100,60 @@ public class ItemAdapter extends ArrayAdapter<Item> {
     @NonNull
     @Override
     public Filter getFilter() {
-        return super.getFilter();
+        //return super.getFilter();
+        return titleFilter;
     }
+
+    @Override
+    public int getCount() {
+        return fullList.size();
+    }
+
+    @Nullable
+    @Override
+    public Item getItem(int position) {
+        return fullList.get(position);
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+    }
+
+    private Filter titleFilter = new Filter() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            ArrayList<Item> filterList = new ArrayList<>();
+
+            if(charSequence == null || charSequence.length() == 0)
+            {
+                filterList.addAll(fullListForFilter);
+            }
+            else
+            {
+                String filteredString = charSequence.toString().toLowerCase().trim();
+
+                for(Item item : fullListForFilter) {
+                    if (item.getTitle().toLowerCase().contains(filteredString) || item.parseDescription(item.getDescription())[0].toLowerCase().contains(filteredString)) {
+                        System.out.println(item.getTitle());
+                        filterList.add(item);
+                    }
+                }
+            }
+            System.out.println(filterList.size());
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = filterList;
+
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            fullList = (ArrayList<Item>) filterResults.values;
+            System.out.println(fullList.size());
+            notifyDataSetChanged();
+            Log.e("Checking publishing", "In the method where data set has been notified");
+        }
+    };
 }
