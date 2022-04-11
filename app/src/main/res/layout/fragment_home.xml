@@ -13,7 +13,7 @@ and how to work it-->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome to the Traffic Scotland Roadworks and Current Incidents RSS Feed"
+        android:text="Welcome to the Traffic Scotland Roadworks and Current Incidents Feed"
         android:gravity="center"
         android:paddingTop="60dp"
         android:textSize="30dp" />
