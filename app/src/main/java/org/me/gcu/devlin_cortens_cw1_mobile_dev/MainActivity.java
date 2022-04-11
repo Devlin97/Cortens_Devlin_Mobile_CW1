@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Current Incidents Link
     private String urlIncidents = "https://trafficscotland.org/rss/feeds/currentincidents.aspx";
 
-    //Initiate our arrayList of items.
-    //Since many functions will use this list we need it to be a global variable
+    //Initiate the arrayList of items.
+    //Since many functions will use this list it needs to be a global variable
     ArrayList<Item> itemsList = new ArrayList<Item>();
 
     @Override
