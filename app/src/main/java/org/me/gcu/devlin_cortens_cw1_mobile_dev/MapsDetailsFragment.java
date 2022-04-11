@@ -31,11 +31,18 @@ import java.util.ArrayList;
 
 public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    //Declaring all the different types of elements that are created in the xml file to use them
     private EditText searchEdit;
     private ListView parsedListView;
     private TextView titleText, descriptionText, linkText, pubDateText;
+
+    //Global instance of the itemsList to use it in various methods
     private ArrayList<Item> itemsList;
+
+    //Global instance of the custom array adapter to also use it in various methods
     private ItemAdapter arrayAdapter;
+
+    //Global instance of the googleMap to use it in various methods
     private GoogleMap mMap;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -134,6 +141,7 @@ public class MapsDetailsFragment extends Fragment implements AdapterView.OnItemC
         });
 
 
+        //return the view
         return v;
     }
 

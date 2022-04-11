@@ -41,15 +41,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Navigation Drawer
     private DrawerLayout drawer;
 
-    // Traffic Scotland Planned Roadworks XML link
+    // Traffic Scotland Roadworks / Current Incidents XML links
+    //Better to set these as global variables as they're all in one place if the link ever changes
     //Planned Roadoworks
     private String urlPlanned="https://trafficscotland.org/rss/feeds/plannedroadworks.aspx";
     //Roadworks Link
     private String urlRoadworks = "https://trafficscotland.org/rss/feeds/roadworks.aspx";
     //Current Incidents Link
     private String urlIncidents = "https://trafficscotland.org/rss/feeds/currentincidents.aspx";
-    //String to initiate the the result which is the string that gets pulled from the XML feed
-    private String result = "";
 
     //Initiate our arrayList of items.
     //Since many functions will use this list we need it to be a global variable
@@ -60,21 +59,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Find the toolbar and set the supportAction
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Find the navigation drawer by id in the xml file so it can be used as a navigation drawer
         drawer = findViewById(R.id.drawer_layout);
 
+        //Find the navigation view in the xml file and set a nav item selected listener to it
+        //This listener will be what swaps the fragments inside this main activity
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Set a new actionBarDrawerToggle and set a drawer listener to it
+        //This is the hamburger icon that appears in the top left which basically allows the drawer to open
+        //by clicking on it instead of swiping from the right of the screen
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         //This make sure that this only happens when the app first gets launched
         if(savedInstanceState == null) {
-            //This opens the home page when we start the app
+            //This opens the home page when the app is started
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_view, new HomeFragment()).commit();
             //Once the app opens and the home page is open we want to make sure the home nav button is selected in our nav drawer
             navigationView.setCheckedItem(R.id.nav_home);
@@ -103,8 +109,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //Have long toast message pop up so the user understands something is happening behind the scenes and their feed will appear soon
             Toast.makeText(this, "Opening Roadworks...", Toast.LENGTH_LONG).show();
-
-            Log.e("MyTag", "Starting Roadworks Parse");
         }
         if(item.getItemId() == R.id.nav_planned_roadworks) {
             //Call the function to start parsing that specific feed
@@ -112,8 +116,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //Have long toast message pop up so the user understands something is happening behind the scenes and their feed will appear soon
             Toast.makeText(this, "Opening Planned Roadworks...", Toast.LENGTH_LONG).show();
-
-            Log.e("MyTag", "Starting Planned Roadworks Parse");
         }
         if(item.getItemId() == R.id.nav_incidents) {
             //Call the function to start parsing that specific feed
@@ -121,53 +123,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             //Have long toast message pop up so the user understands something is happening behind the scenes and their feed will appear soon
             Toast.makeText(this, "Opening Current Incidents...", Toast.LENGTH_LONG).show();
-
-            Log.e("MyTag", "Starting current incidents parse");
         }
         if(item.getItemId() == R.id.nav_home) {
-            //when we click on home return to home
+            //when user clicks on home return to home
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_view, new HomeFragment()).commit();
         }
 
-        //When we click on a page from the navigation slider, we want the drawer to close again and not stay open
+        //When user clicks on a page from the navigation slider, we want the drawer to close again and not stay open
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    //We call this function from our on click which starts the thread to parse the current incidents feed
+    //This function is called from our on click which starts the thread to parse the current incidents feed
     public void startCurrentIncidentsParse() {
         //Clear the arraylist to so the arraylist doesn't contain any items from old parses
         itemsList.clear();
-
-        //We need to set the result back to an empty string when we start a new thread or else
-        //when we start the new string it will keep adding on to the string from the previously called thread
-        result = "";
 
         //start the thread which takes in the url for current incidents
         new Thread(new CurrentIncidentTask(urlIncidents)).start();
     }
 
-    //We call this function from our on click which starts the thread to parse the planned roadworks feed
+    //This function is called from our on click which starts the thread to parse the planned roadworks feed
     public void startPlannedRoadworksParse() {
         //Clear the arraylist to so the arraylist doesn't contain any items from old parses
         itemsList.clear();
-
-        //We need to set the result back to an empty string when we start a new thread or else
-        //when we start the new string it will keep adding on to the string from the previously called thread
-        result = "";
 
         //start the thread which takes in the url for planned roadworks
         new Thread(new Task(urlPlanned)).start();
     }
 
-    //We call this function from our on click which starts the thread to parse the current roadworks feed
+    //This function is called from our on click which starts the thread to parse the current roadworks feed
     public void startRoadworksParse() {
         //Clear the arraylist to so the arraylist doesn't contain any items from old parses
         itemsList.clear();
-
-        //We need to set the result back to an empty string when we start a new thread or else
-        //when we start the new string it will keep adding on to the string from the previously called thread
-        result = "";
 
         //start the thread which takes in the url for current roadworks
         new Thread(new Task(urlRoadworks)).start();
@@ -193,6 +181,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             URLConnection yc;
             BufferedReader in = null;
             String inputLine = "";
+
+            //String to store the result of all the text grabbed from the xml feed
+            //This will be a large xml document stored as a string from where the xml pull parser can go through it
+            String result = "";
 
 
             try
@@ -393,11 +385,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }//End try
         catch (XmlPullParserException err)
         {
-            Log.e("MyTag","Parsing failed. Reason: " + err.toString());
+            Log.e("Error Parsing","Parsing failed. Reason: " + err.toString());
         }
         catch (IOException err)
         {
-            Log.e("MyTag","IO Error.");
+            Log.e("Error IO","IO Error.");
         }
 
 
@@ -425,21 +417,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             BufferedReader in = null;
             String inputLine = "";
 
-
-            Log.e("MyTag","in run");
+            //String to store the result of all the text grabbed from the xml feed
+            //This will be a large xml document stored as a string from where the xml pull parser can go through it
+            String result = "";
 
             try
             {
-                Log.e("MyTag","in try");
                 aurl = new URL(url);
                 yc = aurl.openConnection();
                 in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-                Log.e("MyTag","after ready");
-                //
-                // Now read the data. Make sure that there are no specific hedrs
-                // in the data file that you need to ignore.
-                // The useful data that you need is in each of the item entries
-                //
+
                 while ((inputLine = in.readLine()) != null)
                 {
                     result = result + inputLine;
@@ -493,71 +480,116 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void parseDataCurrentIncident(String dataToParse) {
 
         try {
+            //Create a new xml pull parser factory to start parsing the string which is a big xml string
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setNamespaceAware(true);
             XmlPullParser xpp = factory.newPullParser();
             xpp.setInput(new StringReader(dataToParse));
             int eventType = xpp.getEventType();
+
+            //The logic for this parse will be essentially the same as a roadworks, but with some slight differences
+            //Still need the boolean variable to check if the current tag is inside of an item and to grab all the data for that item
             boolean insideOfItem = false;
+
+            //Temporary strings to store all the information of a the item as its being looped over before they are put
+            //into a current incidents item constructor
             String tempTitle = "";
             String tempDescription = "";
             String tempLink = "";
             String tempGeorsspoint = "";
+
+            //For current incidents, just like roadworks, <author> and <comments> are not used
+            //They are not included in a current incidents constructor at all as that is what is used to differentiate
+            //if said item is a current incident or roadwork
+
+            //But for this they will still be added here
+            //As they are still included in the item tag, the could possibly be used at a later date if traffic scotland decide to start using these tags
+            //Keeping these in will mean if traffic scotland start using these tags, all that needs to be done is changing the constructor to include these
             String tempAuthor = "";
             String tempComments = "";
             String tempPubDate = "";
             LocalDate tempPubDateToDate = null;
+
+            //while the pullparser is not at the end of a document keep looping
             while (eventType != XmlPullParser.END_DOCUMENT) {
 
+                //If a start tag (<>) is found go inside of this if
                 if (eventType == XmlPullParser.START_TAG) {
+                    //If the tag was a start and is also an item (<item>) go inside this
                     if (xpp.getName().equalsIgnoreCase("item")) {
-
+                        //Being in here means the pull parser is currently at the start of an item
+                        //Now set the insideOfItem variable to true so the method knows it is currently inside of an item
+                        //and while this is true grab everything inside of this item
                         insideOfItem = true;
-
-                    } else if (xpp.getName().equalsIgnoreCase("title")) {
+                    }
+                    //Else if this is currently a start tag being looked at and its name is title (<title>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("title")) {
+                        //If this is a starting title tag AND the method is currently looking inside of an item, grab the title between the item tags
                         if (insideOfItem) {
                             tempTitle = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("description")) {
+                    }
+                    //else if this is a start tag and its name is description (<description>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("description")) {
+                        //if this is a description tag AND the method is currently inside of an item, grab the description text between the description tags
                         if (insideOfItem) {
                             tempDescription = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("link")) {
+                    }
+                    //else if this is currently a start tag and its name is link (<link>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("link")) {
+                        //if this a link tag AND the method is currently inside of an item grab the link text from between the link tags
                         if (insideOfItem) {
                             tempLink = xpp.nextText();
-                            //Log.e("Cheking", tempLink);
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("point")) {
+                    }
+                    //else if this is currently a start tag and the name is (<point>) go inside this if
+                    //Note: the actual tag within the rss feed is <georss:point>, but the xml pull parser interprets this as <point> due to the ':' in the tag
+                    else if (xpp.getName().equalsIgnoreCase("point")) {
+                        //if the tag was a point tag and the method is currently looking in an item grab the georsspoint
                         if (insideOfItem) {
+                            //This georsspoint will be stored as a string here and then later parsed into numbers when this specific item is selected
                             tempGeorsspoint = xpp.nextText();
-                            //Log.e("Cheking", tempGeorsspoint);
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("author")) {
+                    }
+                    //else if this is currently a starting tag and the name is author (<author>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("author")) {
+                        //if the tag was author and the method is currnetly looking inside of an item grab the author text
                         if (insideOfItem) {
+                            //Note: This isn't used in the xml feed and is not included in the current incident constructor
+                            //this will be left in as it is still included in the xml feed and could be possibly be used in the future
                             tempAuthor = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("comments")) {
+                    }
+                    //else if this is currently a starting tag and the name is comments (<comments>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("comments")) {
+                        //if the tag was comments and the method is currently looking inside of an item grab the comments text
                         if (insideOfItem) {
+                            //Note: This isn't used in the xml feed and is not included in the current incident constructor
+                            //this will be left in as it is still included in the xml feed and could be possibly be used in the future
                             tempComments = xpp.nextText();
                         }
-                    } else if (xpp.getName().equalsIgnoreCase("pubdate")) {
+                    }
+                    //else if this is currently a starting tag and the name is pubdate (<pubdate>) go inside this if
+                    else if (xpp.getName().equalsIgnoreCase("pubdate")) {
+                        //if the name was pubdate and the method is currently looking inside of an item grab the text between the pubdate tags
                         if (insideOfItem) {
                             tempPubDate = xpp.nextText();
 
-//                            int dateTrim = tempPubDate.indexOf("00:00");
-//                            tempPubDate = tempPubDate.substring(0, dateTrim - 1);
-                            //Log.e("Checking" , tempPubDate);
-
-
+                            //the pubdate is currently stored as a string but it needs to be stored as a local date
+                            //Format the string as a date so it is more usable
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
                             LocalDate date = LocalDate.parse(tempPubDate, formatter);
-                            //Log.e("Checking date ", date.toString());
+
                             tempPubDateToDate = date;
                         }
                     }
 
-                } else if (eventType == XmlPullParser.END_TAG
-                        && xpp.getName().equalsIgnoreCase("item")) {
+                }
+                //Else if the event type is an end tag (</>) AND that end tag is called item (</item>) go inside this if
+                else if (eventType == XmlPullParser.END_TAG && xpp.getName().equalsIgnoreCase("item")) {
+                    //now that the method is at the end of an item, it is not longer inside of an item
+                    //set the boolean to false
                     insideOfItem = false;
 
                     //Creating a new Item object, this constructor takes in everything bar the author and comments
@@ -570,22 +602,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //Item(String titleIn, String desIn, String linkIn, String geoIn, LocalDate pubDateIn)
                     Item newItem = new Item(tempTitle, tempDescription, tempLink, tempGeorsspoint, tempPubDateToDate);
 
-                    //Now push this item to our global arraylist
+                    //Now push this item to the global arraylist
                     itemsList.add(newItem);
 
 
                 }
+                //go to next event
                 eventType = xpp.next();
 
             }
         }//End try
+        //Catch to catch any errors present during parsing
         catch (XmlPullParserException err)
         {
-            Log.e("MyTag","Parsing failed. Reason: " + err.toString());
+            Log.e("Error Parsing","Parsing failed. Reason: " + err.toString());
         }
         catch (IOException err)
         {
-            Log.e("MyTag","IO Error.");
+            Log.e("Error IO","IO Error.");
         }
 
 
