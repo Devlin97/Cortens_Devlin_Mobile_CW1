@@ -17,8 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/list_text_colours_string"
-            android:layout_marginBottom="15sp"
-            android:textSize="17dp"
+            android:layout_marginBottom="5dp"
+            android:textSize="14dp"
             android:textStyle="bold"/>
 
         <EditText
