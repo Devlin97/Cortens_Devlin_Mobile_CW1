@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             catch (IOException ae)
             {
-                Log.e("MyTag", "ioexception in run");
+                Log.e("Pulling XML Error", "XML Reading Error: " + ae.toString());
             }
 
             //Parse the roadworks data
@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         catch (IOException err)
         {
-            Log.e("Error IO","IO Error.");
+            Log.e("Error IO","IO ERROR. Reason: " + err.toString());
         }
 
 
@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             catch (IOException ae)
             {
-                Log.e("MyTag", "ioexception in run");
+                Log.e("Pulling XML Error", "XML Reading Error: " + ae.toString());
             }
 
             //Call the specific function that just parses the current incident feed
