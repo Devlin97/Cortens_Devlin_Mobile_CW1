@@ -105,14 +105,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if(item.getItemId() == R.id.nav_roadworks) {
             //Call the function to start parsing that specific feed
-            startPlannedRoadworksParse();
+            startRoadworksParse();
 
             //Have long toast message pop up so the user understands something is happening behind the scenes and their feed will appear soon
             Toast.makeText(this, "Opening Roadworks...", Toast.LENGTH_LONG).show();
         }
         if(item.getItemId() == R.id.nav_planned_roadworks) {
             //Call the function to start parsing that specific feed
-            startRoadworksParse();
+            startPlannedRoadworksParse();
 
             //Have long toast message pop up so the user understands something is happening behind the scenes and their feed will appear soon
             Toast.makeText(this, "Opening Planned Roadworks...", Toast.LENGTH_LONG).show();
