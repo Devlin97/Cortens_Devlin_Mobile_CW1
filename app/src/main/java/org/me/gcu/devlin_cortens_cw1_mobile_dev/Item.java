@@ -25,12 +25,8 @@ public class Item implements Serializable {
     private String comments;
     private LocalDate pubDate;
 
-    //This variable isnt inside the item tag but is used to hold the duration of the roadworks after its been parsed from the description
+    //This variable isnt inside the item tag but is used to hold the duration of the roadworks in hours after its been parsed from the description
     private long hours;
-
-    //boolean that checks if the item made is an incident or not
-    //this is for the toString method which needs to return something different if the item is a current incident or roadwork
-    private boolean isIncident;
 
     //Planned and Current Roadworks Constructor
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -49,10 +45,6 @@ public class Item implements Serializable {
 
         //Run the algorithm that finds the difference in hours between the two dates and set this to hours
         hours = findHours(theStart, theEnd);
-
-        //This is a roadwork, so the item isn't an incident
-        isIncident = false;
-
     }
 
     //Current Incidents Constructor
@@ -64,26 +56,16 @@ public class Item implements Serializable {
         link = linkIn;
         georsspoint = geoIn;
         pubDate = pubDateIn;
-
-        //This is an incident so set isIncident to true
-        isIncident = true;
-
     }
 
     //toString method
-    //this method is needed for searching the roadworks and current incidents lists, and for populating the current incidents list.
+    //this method is needed for populating and searching current incidents lists
     //Current incidents doesn't need to use a custom array adapter so the basic array adapter just calls the items toString method
     //and this will just return the title. Then when the user clicks on it they can see the description and pubdate etc etc
-
-    //But for Roadworks lists which use a custom adapter the toString method is what getFilter() uses to search the list
-    //Since the user will also want to search by date, the toString method for an incident will also need to return the description, which stores the date
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public String toString() {
-        if(isIncident == true) {
-            return title;
-        }
-        return title + description;
+        return title;
     }
 
     //Getters and Setters for each of the attributes
@@ -152,13 +134,6 @@ public class Item implements Serializable {
         this.hours = newHours;
     }
 
-    public boolean getIsIncident() {
-        return isIncident;
-    }
-
-    public void setIsIncident(boolean newIsIncident) {
-        this.isIncident = newIsIncident;
-    }
 
     //This method is used to parse the description of current and planned roadworks
     //It finds the strings where it says "start date: xxx-xxx-xxx" and "end date: xxx-xxx-xxx"
