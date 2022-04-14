@@ -430,8 +430,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 while ((inputLine = in.readLine()) != null)
                 {
                     result = result + inputLine;
-                    //Log.e("MyTag",inputLine);
-
                 }
                 in.close();
             }
