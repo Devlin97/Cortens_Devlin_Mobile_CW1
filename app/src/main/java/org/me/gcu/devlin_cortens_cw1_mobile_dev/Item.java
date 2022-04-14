@@ -49,7 +49,7 @@ public class Item implements Serializable {
 
     //Current Incidents Constructor
     //Sine current incidents doesn't have description parsing we're going to make a separate constructor for it
-    //Just not passing in the author or comments
+    //Just not passing in the author or comments as this will differentiate between current incidents and roadworks Items
     public Item(String titleIn, String desIn, String linkIn, String geoIn, LocalDate pubDateIn) {
         title = titleIn;
         description = desIn;
